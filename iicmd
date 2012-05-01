@@ -8,9 +8,9 @@ chan="$5"
 self="$6"
 
 read -r cmd extra <<< "$mesg"
-if [[ "$mesg" =~ .*\>.* ]]; then
-    IFS='> ' read -r extra nicks <<< "$extra"
-    [[ -z "$nicks" ]] && nicks="$extra" extra=
+if [[ "$mesg" =~ .*\>.+ ]]; then
+    read -r nicks <<< "${extra#*>}"
+    read -r extra <<< "${extra%>*}"
 fi
 
 if [[ "$nicks" == "@all" ]]; then
