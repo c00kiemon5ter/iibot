@@ -24,7 +24,7 @@ monitor() {
             [[ "$msg" =~ https?:// ]] && msg='!'"url $msg"
             # if msg is a command, invoke iicmd
             [[ "$msg" =~ ^! ]] && exec iicmd "$nick" "${msg#\!}" "$ircdir" "$network" "$channel" "$nickname" &
-        done > "$ircdir/$network/$channel/in"
+        done | fold -w 140 > "$ircdir/$network/$channel/in"
 }
 
 for network in "${!networks[@]}"; do
