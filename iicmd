@@ -24,6 +24,7 @@ commands=(
     fortune
     ping
     slap
+    url
     whereami
 )
 
@@ -42,6 +43,14 @@ case "$cmd" in
         ;;
     slap)
         printf -- "%s slaps %s with %s\n" "$nick" "${nicks:-his cohones}" "${extra:-a large herpderp}"
+        ;;
+    url)
+        link="$(sed 's;.*\(http[^ ]*\).*;\1;' <<< "$extra")"
+        turl="$(curl -s "http://api.bitly.com/v3/shorten?login=pancakesbot&apiKey=R_ac2adceb07f01d8faca52bb77c67293b&longUrl=${link%#*}&format=txt")"
+        (( ${#link} > 80 )) && tiny=1 || tiny=0
+        link="$(sed 's;.*youtu\.\?be.*v=\([^&]\+\).*;http://youtube.com/embed/\1;' <<< "$link")"
+        titl="$(curl -s "$link" | sed -n 's;.*<title>\([^<]*\)</title>.*;\1;p')"
+        (( tiny )) && printf -- "%s :: %s\n" "$turl" "$titl" || printf -- "%s\n" "$titl"
         ;;
     whereami)
         printf -- "%s: this! is! %s!!!!!\n" "$nick" "$chan"

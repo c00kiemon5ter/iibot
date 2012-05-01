@@ -19,6 +19,10 @@ monitor() {
             # strip < and >. if msg is by ourself ignore it
             nick="${nick:1:-1}"
             [[ "$nick" == "$nickname" ]] && continue
+
+            # if msg contains a url, transform to url command
+            [[ "$msg" =~ https?:// ]] && msg='!'"url $msg"
+            # if msg is a command, invoke iicmd
             [[ "$msg" =~ ^! ]] && exec iicmd "$nick" "${msg#\!}" "$ircdir" "$network" "$channel" "$nickname" &
         done > "$ircdir/$network/$channel/in"
 }
