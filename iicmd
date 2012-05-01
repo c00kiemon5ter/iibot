@@ -10,12 +10,13 @@ self="$6"
 read -r cmd extra <<< "$mesg"
 if [[ "$mesg" =~ .*\>.* ]]; then
     IFS='>' read -r extra nicks <<< "$extra"
-    [[ -z "$nicks" ]] && nicks=( $extra ) extra= || nicks=( $nicks )
+    [[ -z "$nicks" ]] && nicks="$extra" extra=
 fi
 
-if [[ "${nicks[0]}" == "@all" ]]; then
+if [[ "$nicks" == "all" ]]; then
     printf -- "/names %s\n" "$chan"
-    sleep 1 && nicks=( $(tail -n2 "$ircd/$netw/out" | grep "[[:digit:]-]\+ [[:digit:]:]\+ = #" | cut -d" " -f5-) )
+    sleep 1 # wait for the response
+    nicks="$(tail -n2 "$ircd/$netw/out" | grep "[[:digit:]-]\+ [[:digit:]:]\+ = #" | cut -d" " -f5-)"
 fi
 
 commands=(
@@ -30,17 +31,20 @@ case "$cmd" in
     list)
         printf -- "%s: %s\n" "$nick" "${commands[*]}"
         ;;
+    echo)
+        [[ -n "$nicks" ]] && printf -- "%s: %s\n" "$nicks" "$extra" || printf "%s\n" "$extra"
+        ;;
     fortune)
         printf -- "%s\n" "$(fortune -osea)"
         ;;
     ping)
-        (( ${#nicks[@]} )) && printf -- "%s: ping!\n" "${nicks[*]}" || printf -- "%s: pong!\n" "$nick"
+        [[ -n "$nicks" ]] && printf -- "%s: ping!\n" "$nicks" || printf -- "%s: pong!\n" "$nick"
         ;;
     slap)
-        printf -- "%s slaps %s with %s\n" "$nick" "${nicks[*]:-his cohones}" "${extra:-a large herpderp}"
+        printf -- "%s slaps %s with %s\n" "$nick" "${nicks:-his cohones}" "${extra:-a large herpderp}"
         ;;
     whereami)
-        printf -- "this\nis\n%s!!\n" "$chan"
+        printf -- "%s: this! is! %s!!!!!\n" "$nick" "$chan"
         ;;
 esac
 
