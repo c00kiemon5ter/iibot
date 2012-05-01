@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+: "${ircdir:=$HOME/ircbot}"
+: "${nickname:=amabot}"
+
+declare -A networks=(
+    [irc.freenode.net]="#foss-aueb"
+)
+
+# some privacy please, thanks
+chmod 700 "$ircdir"
+chmod 600 "$ircdir"/*/ident &>/dev/null
+
+monitor() {
+    tailf -n1 "$ircdir/$network/$channel/out" | \
+        while read -r date time nick msg; do
+            [[ "$nick" == '-!-' ]] && continue
+            nick="${nick:1:-1}" # strip < and >
+            [[ "$nick" == "$nickname" ]] && continue
+            [[ "$msg" =~ ^! ]] && exec iicmd "$nick" "${msg#\!}" "$ircdir" "$network" "$channel" "$nickname" &
+        done > "$ircdir/$network/$channel/in"
+}
+
+for network in "${!networks[@]}"; do
+    while true; do
+        # cleanup
+        rm -f "$ircdir/$network/in"
+
+        # connect to netwrok - password is set through the env var IIPASS
+        ii -i "$ircdir" -n $nickname -s "$network" -e ssl &
+        pid="$!"
+
+        # wait for the connection
+        while ! test -p "$ircdir/$network/in"; do sleep 1; done
+
+        # auth to services
+        [[ -e "$ircdir/$network/ident" ]] && \
+            printf -- "/j nickserv identify %s\n" "$(<"$ircdir/$network/ident")" > "$ircdir/$network/in"
+        rm -f "$ircdir/$network/nickserv/out" # clean that up - ident passwd is in there
+
+        # join channels
+        for channel in ${networks[$network]}; do
+            printf -- "/j %s\n" "$channel" > "$ircdir/$network/in"
+            [[ -e "$ircdir/$network/$channel/out" ]] || touch "$ircdir/$network/$channel/out"
+            monitor &
+        done
+
+        # if connection is lost reconnect
+        wait "$pid"
+    done &
+done
+

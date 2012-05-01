@@ -1,0 +1,23 @@
+
+## iibot
+
+a minimal bot based on [ii] by [suckless], auto-managed by 40sloc of bash.
+
+#### featuring:
+
+ * dynamic commands - just edit `iicmd`, simple plain bash. stdout goes to channel.
+ * parallel connection to networks
+ * auto reconnect to networks and channels
+
+## UnLicense
+
+code and text are unlicensed.
+see [unlicense.org] for more information
+original hacks by [Ivan c00kiemon5ter V Kanakarakis][c].
+if you have cookies, share :]
+
+  [ii]: http://tools.suckless.org/ii/
+  [suckless]: http://suckless.org/
+  [unlicense.org]: http://unlicense.org/
+  [c]: http://c00kiemon5ter.github.com/
+
