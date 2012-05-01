@@ -14,8 +14,10 @@ chmod 600 "$ircdir"/*/ident &>/dev/null
 monitor() {
     tailf -n1 "$ircdir/$network/$channel/out" | \
         while read -r date time nick msg; do
+            # if msg is by the system ignore it
             [[ "$nick" == '-!-' ]] && continue
-            nick="${nick:1:-1}" # strip < and >
+            # strip < and >. if msg is by ourself ignore it
+            nick="${nick:1:-1}"
             [[ "$nick" == "$nickname" ]] && continue
             [[ "$msg" =~ ^! ]] && exec iicmd "$nick" "${msg#\!}" "$ircdir" "$network" "$channel" "$nickname" &
         done > "$ircdir/$network/$channel/in"
