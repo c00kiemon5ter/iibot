@@ -17,7 +17,7 @@ if [[ "$nicks" == "@all" ]]; then
     printf -- "/names %s\n" "$chan"
     nicks=""
     while test -z "$nicks"; do # wait for the response
-        nicks="$(tail -n2 "$ircd/$netw/out" | grep "[[:digit:]-]\+ [[:digit:]:]\+ = #" | cut -d" " -f5-)"
+        nicks="$(tail -n2 "$ircd/$netw/out" | grep "[[:digit:]-]\+ [[:digit:]:]\+ = $chan" | cut -d" " -f5-)"
         sleep .5
     done
 fi
