@@ -24,6 +24,8 @@ fi
 
 commands=(
     list
+    calc
+    echo
     fortune
     ping
     slap
@@ -34,6 +36,9 @@ commands=(
 case "$cmd" in
     list)
         [[ -n "$nicks" ]] && printf -- "%s: %s\n" "$nicks" "${commands[*]}" || printf -- "%s: %s\n" "$nick" "${commands[*]}"
+        ;;
+    calc)
+        [[ -n "$extra" ]] && printf -- "%f\n" "$(bc -l <<< "$extra")"
         ;;
     echo)
         [[ -n "$nicks" ]] && printf -- "%s: %s\n" "$nicks" "$extra" || printf "%s\n" "$extra"
