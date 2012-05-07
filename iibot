@@ -51,10 +51,12 @@ for network in "${!networks[@]}"; do
             printf -- "/j %s\n" "$channel" > "$ircdir/$network/in"
             [[ -e "$ircdir/$network/$channel/out" ]] || touch "$ircdir/$network/$channel/out"
             monitor &
+            pids+=($!)
         done
 
         # if connection is lost reconnect
         wait "$pid"
+        kill "${pids[@]}"
     done &
 done
 
