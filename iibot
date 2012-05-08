@@ -22,10 +22,10 @@ monitor() {
 
             # if msg contains a url, transform to url command
             [[ "$msg" =~ https?:// ]] && \
-                exec iicmd "$nick" "url ${msg#* }" "$ircdir" "$network" "$channel" "$nickname" | fold -w 140 &
+                exec iicmd "$nick" "url ${msg#* }" "$ircdir" "$network" "$channel" "$nickname" | fold -w 255 &
             # if msg is a command, invoke iicmd
             [[ "$msg" =~ ^! ]] && \
-                exec iicmd "$nick" "${msg#\!}" "$ircdir" "$network" "$channel" "$nickname" | fold -w 140 &
+                exec iicmd "$nick" "${msg#\!}" "$ircdir" "$network" "$channel" "$nickname" | fold -w 255 &
         done > "$ircdir/$network/$channel/in"
 }
 
