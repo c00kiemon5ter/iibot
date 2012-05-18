@@ -41,7 +41,7 @@ case "$cmd" in
         [[ -n "$extra" ]] && printf -- "%f\n" "$(bc -l <<< "$extra")"
         ;;
     echo)
-        [[ -n "$nicks" ]] && printf -- "%s: %s\n" "$nicks" "$extra" || printf "%s\n" "$extra"
+        [[ -n "$nicks" ]] && printf -- "%s: %s\n" "$nicks" "${extra#/}" || printf "%s\n" "${extra#/}"
         ;;
     fortune)
         printf -- "%s\n" "$(fortune -osea)"
